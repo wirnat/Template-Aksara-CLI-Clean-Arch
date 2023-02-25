@@ -1,0 +1,25 @@
+package api
+
+import (
+	"{{.Meta.import_app}}"
+    "{{.Meta.import_delivery_imp}}"
+	"{{.Meta.import_repository_imp}}"
+	"{{.Meta.import_usecase_imp}}"
+)
+
+func New{{.Model}}Rest(app app.App) {{.Meta.dir_delivery}}.{{.Model}}Rest {
+	{{.ModelCamel}}R := {{.ModelSnake}}_gorm.New(*app.DB.GORM)
+	{{.ModelCamel}}FetchU := {{.Meta.dir_usecase}}.New{{.Model}}FetchUsecase({{.ModelCamel}}R, {{.ModelCamel}}R)
+	{{.ModelCamel}}GetU := {{.Meta.dir_usecase}}.New{{.Model}}GetUsecase({{.ModelCamel}}R)
+	{{.ModelCamel}}DeleteU := {{.Meta.dir_usecase}}.New{{.Model}}DeleteUsecase({{.ModelCamel}}R)
+	{{.ModelCamel}}Update := {{.Meta.dir_usecase}}.New{{.Model}}UpdateUsecase({{.ModelCamel}}R, {{.ModelCamel}}R)
+	{{.ModelCamel}}Store := {{.Meta.dir_usecase}}.New{{.Model}}StoreUsecase({{.ModelCamel}}R)
+
+	return {{.Meta.dir_delivery}}.{{.Model}}Rest{
+		{{.Model}}Fetch:  {{.ModelCamel}}FetchU,
+		{{.Model}}Get:    {{.ModelCamel}}GetU,
+		{{.Model}}Delete: {{.ModelCamel}}DeleteU,
+		{{.Model}}Update: {{.ModelCamel}}Update,
+		{{.Model}}Store:  {{.ModelCamel}}Store,
+	}
+}

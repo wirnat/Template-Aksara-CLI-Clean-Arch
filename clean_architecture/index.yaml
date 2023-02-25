@@ -1,17 +1,26 @@
 key: ᬅᬓ᭄ᬱᬭ
 model_path: domain/model
-module_name: ms-glow-erp/enterprise-pos
+module_name: git.aksaratech.com/aksaratech/enterprise-pos
 execute_models:
 #  - Company
 #  - ItemService
+#  - TemplateRuleParam
+#  - TemplateRuleFunction
+#  - TemplateRuleParam
+#  - TemplateRuleFunction
 #  - Executor
 #  - ExecutorItemService
 #  - User
 #  - Chat
-  - ExecutorFavorite
+#  - ExecutorFavorite
+#  - CompanyItemService
+#  - Subscription
+#  - Plan
 meta:
   architecture_dir: "factory/clean_architecture"
   result_path: modules
+  dir_usecase: "~model_snake~_usecase_v1"
+  dir_delivery: "~model_snake~_http_1"
   import_repository: "~module_name~/~result_path~/~module~/repository/~model_snake~_repository"
   import_request: "~module_name~/~result_path~/~module~/request/~model_snake~_request"
   import_response: "~module_name~/~result_path~/~module~/response"
@@ -21,12 +30,13 @@ meta:
   import_pagination: "~module_name~/infrastructure/paginator"
   import_model: "~module_name~/~model_path~"
   import_datastore: "~module_name~/infrastructure/datastore"
-  import_delivery_imp: "~module_name~/~result_path~/~module~/delivery/~model_snake~_delivery/http_1"
+  import_delivery_imp: "~module_name~/~result_path~/~module~/delivery/~model_snake~_delivery/~model_snake~_http_1"
   import_repository_imp: "~module_name~/~result_path~/~module~/repository/~model_snake~_repository/~model_snake~_gorm"
   import_usecase_imp:    "~module_name~/~result_path~/~module~/usecase/~model_snake~_usecase/~model_snake~_usecase_v1"
   import_app: "~module_name~/infrastructure/app"
   template: "~architecture_dir~/templates"
-  dir_usecase: "~model_snake~_usecase_v1"
+
+  cmd: "cmd/ms_clinic"
 
 
 
@@ -37,6 +47,13 @@ include_module_traits:
   - factory/clean_architecture/response.yaml
   - factory/clean_architecture/request.yaml
   - factory/clean_architecture/delivery.yaml
+
+module_traits:
+  - name: "~model_snake~ HTTP Constructor"
+    dir: "~cmd~/modules/api"
+    template: ~template~/rest_constructor.text
+    file_name: "~model_snake~_rest.g.go"
+    active: true
 
 traits:
   - name: "download templates"

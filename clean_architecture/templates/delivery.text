@@ -1,4 +1,4 @@
-package {{.Meta.dir_usecase}}
+package {{.Meta.dir_delivery}}
 
 import (
 	 "{{.Meta.import_http_framework}}"
@@ -18,12 +18,23 @@ type {{.Model}}Rest struct {
 func (r {{.Model}}Rest) Expose(app app.App) {
 	{{.ModelCamel}} := app.Framework.Group("/{{.ModelSnake}}")
 	{{.ModelCamel}}.Get("", r.Show)
-	{{.ModelCamel}}.Get("s", r.Paginate)
+	app.Framework.Get("/{{.ModelPlural}}", r.Paginate)
 	{{.ModelCamel}}.Post("", r.Store)
 	{{.ModelCamel}}.Put("/:uuid", r.Update)
 	{{.ModelCamel}}.Delete("/:uuid", r.Delete)
 }
 
+// Show godoc
+//	@Summary		Show {{.Model}}
+//	@Description	get detail of {{.ModelSnake}}
+//	@Tags			{{.ModelSnake}}
+//	@Accept			json
+//	@Produce		json
+{{- range $m:=.ModelFields }}
+//	@Param			{{$m.Json }}   query		string	false	"search by {{$m.Json -}}"
+{{- end}}
+//	@Success		200	{object}		model.{{.Model}}
+//	@Router			/{{.ModelSnake}} [get]
 func (r {{.Model}}Rest) Show(ctx *http_framework.Contextor) error {
 	param := {{.ModelSnake}}_request.{{.Model}}Param{}
 	err := ctx.Bind(&param)
@@ -54,6 +65,15 @@ func (r {{.Model}}Rest) Find(ctx *http_framework.Contextor) error {
 	return ctx.JSON(200, res)
 }
 
+// Store godoc
+//	@Summary		Store {{.Model}}
+//	@Description	create a {{.ModelSnake}}
+//	@Tags			{{.ModelSnake}}
+//	@Accept			json
+//	@Produce		json
+//	@Param			payload	body	{{.ModelSnake}}_request.{{.Model}}Store	true	"payload creates {{.ModelSnake}}"
+//	@Success		200	{array}		model.{{.Model}}
+//	@Router			/{{.ModelSnake}} [post]
 func (r {{.Model}}Rest) Store(ctx *http_framework.Contextor) error {
 	param := new({{.ModelSnake}}_request.{{.Model}}Store)
 	err := ctx.Bind(param)
@@ -73,6 +93,17 @@ func (r {{.Model}}Rest) Store(ctx *http_framework.Contextor) error {
 	return ctx.JSON(200, res)
 }
 
+
+// Update godoc
+//	@Summary		Update {{.Model}}
+//	@Description	update a {{.ModelSnake}}
+//	@Tags			{{.ModelSnake}}
+//	@Accept			json
+//	@Produce		json
+//	@Param			uuid	path		string	false	"uuid {{.ModelSnake}}"
+//	@Param			payload	body {{.ModelSnake}}_request.{{.Model}}Update	true	"payload updates {{.ModelSnake}}"
+//	@Success		200	{array}		model.{{.Model}}
+//	@Router			/{{.ModelSnake}}/{uuid} [put]
 func (r {{.Model}}Rest) Update(ctx *http_framework.Contextor) error {
 	param := new({{.ModelSnake}}_request.{{.Model}}Update)
 	err := ctx.Bind(param)
@@ -94,6 +125,15 @@ func (r {{.Model}}Rest) Update(ctx *http_framework.Contextor) error {
 	return ctx.JSON(200, res)
 }
 
+// Delete godoc
+//	@Summary		Delete {{.Model}}
+//	@Description	delete a {{.ModelSnake}} by UUID
+//	@Tags			{{.ModelSnake}}
+//	@Accept			json
+//	@Produce		json
+//	@Param			uuid	path		string	false	"uuid {{.ModelSnake}}"
+//	@Success		200	{array}		string
+//	@Router			/{{.ModelSnake}}/{uuid} [delete]
 func (r {{.Model}}Rest) Delete(ctx *http_framework.Contextor) error {
 	uuid := ctx.Param("uuid")
 	err := r.{{.Model}}Delete.Delete(ctx.ToContext(), uuid)
@@ -104,6 +144,17 @@ func (r {{.Model}}Rest) Delete(ctx *http_framework.Contextor) error {
 	return ctx.JSON(200, uuid)
 }
 
+// Paginate godoc
+//	@Summary		Fetch {{.Model}} with Paginator
+//	@Description	fetch {{.ModelSnake}} with paginator param and response
+//	@Tags			{{.ModelSnake}}
+//	@Accept			json
+//	@Produce		json
+{{- range $m:=.ModelFields }}
+//	@Param			{{$m.Json }}   query		string	false	"search by {{$m.Json -}}"
+{{- end}}
+//	@Success		200	{array}		model.{{.Model}}
+//	@Router			/{{.ModelPlural}} [get]
 func (r {{.Model}}Rest) Paginate(ctx *http_framework.Contextor) error {
 	param := {{.ModelSnake}}_request.{{.Model}}Param{}
 	err := ctx.Bind(&param)
